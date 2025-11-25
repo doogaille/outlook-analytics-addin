@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Analytics Réunions</title>
+    
+    <!-- Office.js -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+    
+    <!-- CSS injecté automatiquement par webpack -->
+</head>
+<body>
+    <!-- Container pour les notifications toast -->
+    <div id="toastContainer" class="toast-container"></div>
+    <div id="content-header">
+        <div class="ms-Grid ms-bgColor-neutralLighter ms-u-fadeIn500">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-lg10 ms-u-xl8 ms-u-xlPush2 ms-u-lgPush1">
+                    <h1 class="ms-font-xl ms-fontColor-themePrimary">Analytics Réunions</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content-main">
+        <div class="ms-Grid ms-bgColor-neutralLighter ms-u-fadeIn500">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-lg10 ms-u-xl8 ms-u-xlPush2 ms-u-lgPush1">
+                    
+                    <!-- Sélecteur de période -->
+                    <div class="date-range-selector">
+                        <label for="startDate">Date de début :</label>
+                        <input type="date" id="startDate" />
+                        
+                        <label for="endDate">Date de fin :</label>
+                        <input type="date" id="endDate" />
+                        
+                        <button id="loadMeetings" class="ms-Button ms-Button--primary">
+                            <span class="ms-Button-label">🔍 Charger les réunions</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtres par couleur -->
+                    <div class="color-filters">
+                        <label>
+                            <input type="checkbox" id="filterRed" checked />
+                            <span class="color-indicator red"></span> No Flex
+                        </label>
+                        <label>
+                            <input type="checkbox" id="filterGreen" checked />
+                            <span class="color-indicator green"></span> Flex
+                        </label>
+                        <label>
+                            <input type="checkbox" id="filterBlue" checked />
+                            <span class="color-indicator blue"></span> Déplacement/Formation
+                        </label>
+                    </div>
+
+                    <!-- Statistiques -->
+                    <div id="statistics" class="statistics-panel">
+                        <h2>Statistiques</h2>
+                        <div id="statsContent"></div>
+                        <div id="chartsContainer" class="charts-container">
+                            <div class="chart-wrapper">
+                                <h3>Répartition par couleur</h3>
+                                <div id="pieChart" class="pie-chart"></div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <h3>Répartition temporelle</h3>
+                                <div id="barChart" class="bar-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste des réunions -->
+                    <div id="meetingsList" class="meetings-list">
+                        <div class="meetings-header">
+                            <h2>Réunions</h2>
+                            <div class="meetings-controls">
+                                <label for="sortBy">Trier par :</label>
+                                <select id="sortBy" class="sort-select">
+                                    <option value="date-asc">Date (croissant)</option>
+                                    <option value="date-desc" selected>Date (décroissant)</option>
+                                    <option value="duration-asc">Durée (croissant)</option>
+                                    <option value="duration-desc">Durée (décroissant)</option>
+                                    <option value="subject-asc">Sujet (A-Z)</option>
+                                    <option value="subject-desc">Sujet (Z-A)</option>
+                                </select>
+                                <span id="meetingsCount" class="meetings-count"></span>
+                            </div>
+                        </div>
+                        <div id="meetingsContent" class="meetings-content-virtual"></div>
+                        <div id="pagination" class="pagination"></div>
+                        <div class="virtual-scroll-info" id="virtualScrollInfo" style="display: none;">
+                            <span>Affichage optimisé : <span id="visibleCount">0</span> / <span id="totalCount">0</span> réunions</span>
+                        </div>
+                    </div>
+
+                    <!-- Bouton d'export -->
+                    <div class="export-section">
+                        <button id="exportCSV" class="ms-Button">
+                            <span class="ms-Button-label">📥 Exporter CSV</span>
+                        </button>
+                        <button id="exportJSON" class="ms-Button">
+                            <span class="ms-Button-label">📥 Exporter JSON</span>
+                        </button>
+                        <button id="settingsButton" class="ms-Button ms-Button--secondary">
+                            <span class="ms-Button-label">⚙️ Paramètres</span>
+                        </button>
+                    </div>
+
+                    <!-- Panneau de configuration des règles de classification -->
+                    <div id="classificationRulesPanel" class="classification-rules-panel" style="display: none;">
+                        <div class="rules-panel-header">
+                            <h2>🎨 Règles de classification</h2>
+                            <button id="closeRulesPanel" class="close-button">×</button>
+                        </div>
+                        <div class="rules-content">
+                            <div class="rules-tabs">
+                                <button class="rule-tab active" data-tab="noFlex">🔴 No Flex</button>
+                                <button class="rule-tab" data-tab="flex">🟢 Flex</button>
+                                <button class="rule-tab" data-tab="deplacement">🔵 Déplacement/Formation</button>
+                            </div>
+                            
+                            <div id="noFlexRules" class="rule-section active">
+                                <h3>Mots-clés No Flex</h3>
+                                <div id="noFlexKeywords" class="keywords-list"></div>
+                                <div class="add-keyword">
+                                    <input type="text" id="noFlexKeywordInput" placeholder="Ajouter un mot-clé..." />
+                                    <button class="add-btn" data-category="noFlex">+ Ajouter</button>
+                                </div>
+                            </div>
+                            
+                            <div id="flexRules" class="rule-section" style="display: none;">
+                                <h3>Mots-clés Flex</h3>
+                                <div id="flexKeywords" class="keywords-list"></div>
+                                <div class="add-keyword">
+                                    <input type="text" id="flexKeywordInput" placeholder="Ajouter un mot-clé..." />
+                                    <button class="add-btn" data-category="flex">+ Ajouter</button>
+                                </div>
+                            </div>
+                            
+                            <div id="deplacementRules" class="rule-section" style="display: none;">
+                                <h3>Mots-clés Déplacement/Formation</h3>
+                                <div id="deplacementKeywords" class="keywords-list"></div>
+                                <div class="add-keyword">
+                                    <input type="text" id="deplacementKeywordInput" placeholder="Ajouter un mot-clé..." />
+                                    <button class="add-btn" data-category="deplacement">+ Ajouter</button>
+                                </div>
+                            </div>
+                            
+                            <div class="rules-actions">
+                                <button id="saveRules" class="ms-Button ms-Button--primary">
+                                    <span class="ms-Button-label">💾 Enregistrer les règles</span>
+                                </button>
+                                <button id="resetRules" class="ms-Button ms-Button--secondary">
+                                    <span class="ms-Button-label">🔄 Réinitialiser</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panneau de configuration -->
+                    <div id="settingsPanel" class="settings-panel" style="display: none;">
+                        <h2>Paramètres</h2>
+                        <div class="settings-content">
+                            <div class="setting-item">
+                                <label for="defaultDays">Période par défaut (jours) :</label>
+                                <input type="number" id="defaultDays" min="1" max="365" value="30" />
+                            </div>
+                            <div class="setting-item">
+                                <label for="meetingsPerPage">Réunions par page :</label>
+                                <input type="number" id="meetingsPerPage" min="5" max="100" value="20" />
+                            </div>
+                            <div class="setting-item">
+                                <label>
+                                    <input type="checkbox" id="autoLoad" />
+                                    Chargement automatique au démarrage
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <button id="classificationRulesButton" class="ms-Button ms-Button--secondary" style="width: 100%; margin-top: 10px;">
+                                    <span class="ms-Button-label">🎨 Configurer les règles de classification</span>
+                                </button>
+                            </div>
+                            <div class="setting-actions">
+                                <button id="saveSettings" class="ms-Button ms-Button--primary">
+                                    <span class="ms-Button-label">Enregistrer</span>
+                                </button>
+                                <button id="cancelSettings" class="ms-Button">
+                                    <span class="ms-Button-label">Annuler</span>
+                                </button>
+                                <button id="resetSettings" class="ms-Button ms-Button--secondary">
+                                    <span class="ms-Button-label">Réinitialiser</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message de chargement -->
+                    <div id="loading" class="loading" style="display: none;">
+                        <div></div>
+                        <p>Chargement des réunions...</p>
+                    </div>
+
+                    <!-- Message d'erreur -->
+                    <div id="error" class="error" style="display: none;">
+                        <p id="errorMessage"></p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

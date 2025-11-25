@@ -1,0 +1,1 @@
+{"version":3,"file":"OutlookAPIMock.d.ts","sourceRoot":"","sources":["../../src/utils/OutlookAPIMock.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,qBAAa,cAAc;IACzB;;OAEG;IACH,MAAM,CAAC,wBAAwB,CAAC,SAAS,EAAE,IAAI,EAAE,OAAO,EAAE,IAAI,GAAG,GAAG,EAAE;IAiEtE;;OAEG;IACH,MAAM,CAAC,wBAAwB,CAAC,QAAQ,EAAE,CAAC,MAAM,EAAE,GAAG,KAAK,IAAI,GAAG,IAAI;CAQvE"}

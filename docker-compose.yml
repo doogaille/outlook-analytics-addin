@@ -1,0 +1,50 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: outlook-addin-dev
+    volumes:
+      # Monter le code source pour le hot-reload
+      - .:/app
+      # Exclure node_modules pour utiliser ceux du container
+      - /app/node_modules
+      # Exclure dist pour éviter les conflits
+      - /app/dist
+    ports:
+      # Port pour le serveur de développement
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    stdin_open: true
+    tty: true
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: outlook-addin-test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=test
+    command: npm test
+    profiles:
+      - test
+
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: outlook-addin-build
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+    command: npm run build
+    profiles:
+      - build
+

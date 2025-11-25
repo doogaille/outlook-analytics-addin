@@ -1,0 +1,27 @@
+# Exemple de fichier docker-compose.override.yml
+# Copiez ce fichier vers docker-compose.override.yml pour personnaliser votre configuration
+# Ce fichier est ignoré par git
+
+version: '3.8'
+
+services:
+  dev:
+    # Changer le port si 3000 est déjà utilisé
+    ports:
+      - "3001:3000"  # Utilisez 3001 au lieu de 3000
+    
+    # Ajouter des variables d'environnement
+    environment:
+      - NODE_ENV=development
+      - DEBUG=*
+    
+    # Limiter les ressources (optionnel)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2'
+    #       memory: 2G
+    #     reservations:
+    #       cpus: '1'
+    #       memory: 1G
+

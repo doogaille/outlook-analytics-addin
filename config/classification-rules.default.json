@@ -1,0 +1,86 @@
+{
+  "noFlex": {
+    "keywords": [
+      "obligatoire",
+      "requis",
+      "required",
+      "mandatory",
+      "direction",
+      "validation",
+      "comité",
+      "board",
+      "réunion importante"
+    ],
+    "patterns": [
+      "/réunion\\s+(de\\s+)?direction/i",
+      "/comité\\s+(de\\s+)?direction/i",
+      "/board\\s+meeting/i",
+      "/validation\\s+(de\\s+)?(projet|budget|stratégie)/i",
+      "/obligatoire/i",
+      "/mandatory/i"
+    ]
+  },
+  "flex": {
+    "keywords": [
+      "optionnel",
+      "optional",
+      "info",
+      "information",
+      "stand-up",
+      "standup",
+      "daily",
+      "point",
+      "briefing",
+      "sync",
+      "synchronisation"
+    ],
+    "patterns": [
+      "/stand[-\\s]?up/i",
+      "/daily\\s+(stand[-\\s]?up|meeting|sync)/i",
+      "/point\\s+(info|information)/i",
+      "/briefing/i",
+      "/optionnel/i",
+      "/optional/i"
+    ]
+  },
+  "deplacement": {
+    "keywords": [
+      "formation",
+      "training",
+      "déplacement",
+      "travel",
+      "client",
+      "customer",
+      "external",
+      "externe",
+      "conférence",
+      "conference",
+      "événement",
+      "event",
+      "seminar",
+      "séminaire"
+    ],
+    "patterns": [
+      "/formation/i",
+      "/training/i",
+      "/déplacement/i",
+      "/travel/i",
+      "/chez\\s+(le\\s+)?client/i",
+      "/external/i",
+      "/externe/i",
+      "/conférence/i",
+      "/conference/i",
+      "/événement/i",
+      "/event/i",
+      "/seminar/i",
+      "/séminaire/i"
+    ]
+  },
+  "priority": [
+    "noFlex",
+    "deplacement",
+    "flex"
+  ],
+  "defaultColor": "green"
+}
+
